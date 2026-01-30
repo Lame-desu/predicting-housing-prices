@@ -10,10 +10,26 @@ st.set_page_config(page_title="Ames Housing Price Predictor", layout="centered")
 # --- Helper Functions ---
 @st.cache_resource
 def load_resources():
-    model = joblib.load('models/random_forest.joblib')
-    preprocessor = joblib.load('models/preprocessor.joblib')
+    # Get the directory where app.py is located
+    base_path = os.path.dirname(__file__)
+    
+    # Construct absolute paths relative to app.py
+    model_path = os.path.join(base_path, 'models', 'random_forest.joblib')
+    preproc_path = os.path.join(base_path, 'models', 'preprocessor.joblib')
+    data_path = os.path.join(base_path, 'data', 'ames_housing.csv')
+    
+    # Check if files exist to provide better error messages
+    if not os.path.exists(model_path):
+        raise FileNotFoundError(f"Model file missing on server: {model_path}")
+    if not os.path.exists(preproc_path):
+        raise FileNotFoundError(f"Preprocessor file missing on server: {preproc_path}")
+    if not os.path.exists(data_path):
+        raise FileNotFoundError(f"Data file missing on server: {data_path}")
+
+    model = joblib.load(model_path)
+    preprocessor = joblib.load(preproc_path)
     # Load a sample row to use as a template for features
-    df_sample = pd.read_csv('data/ames_housing.csv').drop(columns=['SalePrice', 'Order', 'PID']).iloc[0:1]
+    df_sample = pd.read_csv(data_path).drop(columns=['SalePrice', 'Order', 'PID']).iloc[0:1]
     return model, preprocessor, df_sample
 
 # Load model, preprocessor, and template
