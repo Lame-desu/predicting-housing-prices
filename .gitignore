@@ -21,4 +21,3 @@ ENV/
 
 # Data and Logs
 *.log
-data/
